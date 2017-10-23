@@ -36,7 +36,7 @@ deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
   file:
-  - "adafruit_adafruit_bmp280.mpy"
+  - "adafruit_bmp280.mpy"
   skip_cleanup: true
   on:
     tags: true

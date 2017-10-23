@@ -26,7 +26,7 @@ source_suffix = '.rst'
 master_doc = 'README'
 
 # General information about the project.
-project = u'Adafruit ADAFRUIT_BMP280 Library'
+project = u'Adafruit BMP280 Library'
 copyright = u'2017 ladyada'
 author = u'ladyada'
 
@@ -91,7 +91,7 @@ else:
 html_static_path = ['_static']
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'AdafruitADAFRUIT_BMP280Librarydoc'
+htmlhelp_basename = 'AdafruitBMP280Librarydoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -117,7 +117,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'AdafruitADAFRUIT_BMP280Library.tex', u'Adafruit ADAFRUIT_BMP280 Library Documentation',
+    (master_doc, 'AdafruitBMP280Library.tex', u'Adafruit BMP280 Library Documentation',
      author, 'manual'),
 ]
 
@@ -126,7 +126,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'adafruitADAFRUIT_BMP280library', u'Adafruit ADAFRUIT_BMP280 Library Documentation',
+    (master_doc, 'adafruitBMP280library', u'Adafruit BMP280 Library Documentation',
      [author], 1)
 ]
 
@@ -136,7 +136,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'AdafruitADAFRUIT_BMP280Library', u'Adafruit ADAFRUIT_BMP280 Library Documentation',
-     author, 'AdafruitADAFRUIT_BMP280Library', 'One line description of project.',
+    (master_doc, 'AdafruitBMP280Library', u'Adafruit BMP280 Library Documentation',
+     author, 'AdafruitBMP280Library', 'One line description of project.',
      'Miscellaneous'),
 ]

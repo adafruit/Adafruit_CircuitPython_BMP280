@@ -2,8 +2,8 @@
 Introduction
 ============
 
-.. image:: https://readthedocs.org/projects/adafruit-circuitpython-Adafruit_BMP280/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/Adafruit_BMP280/en/latest/
+.. image:: https://readthedocs.org/projects/adafruit-circuitpython-bmp280/badge/?version=latest
+    :target: https://circuitpython.readthedocs.io/projects/bmp280/en/latest/
     :alt: Documentation Status
 
 .. image :: https://img.shields.io/discord/327254708534116352.svg
@@ -33,7 +33,7 @@ Contributing
 ============
 
 Contributions are welcome! Please read our `Code of Conduct
-<https://github.com/adafruit/Adafruit_CircuitPython_Adafruit_BMP280/blob/master/CODE_OF_CONDUCT.md>`_
+<https://github.com/adafruit/Adafruit_CircuitPython_bmp280/blob/master/CODE_OF_CONDUCT.md>`_
 before contributing to help this project stay welcoming.
 
 API Reference
