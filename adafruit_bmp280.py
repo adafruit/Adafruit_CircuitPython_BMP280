@@ -78,9 +78,9 @@ class Adafruit_BMP280:
         UT = self._read24(BMP280_REGISTER_TEMPDATA) / 16  # lowest 4 bits get dropped
         #print("raw temp: ", UT)
 
-        var1 = (UT / 16384.0 - float(self.dig_T1) / 1024.0) * float(self.dig_T2)
-        var2 = ((UT / 131072.0 - float(self.dig_T1) / 8192.0) * (
-            UT / 131072.0 - float(self.dig_T1) / 8192.0)) * float(self.dig_T3)
+        var1 = (UT / 16384.0 - self.dig_T1 / 1024.0) * self.dig_T2
+        var2 = ((UT / 131072.0 - self.dig_T1 / 8192.0) * (
+            UT / 131072.0 - self.dig_T1 / 8192.0)) * self.dig_T3
         self.t_fine = int(var1 + var2)
         #print("t_fine: ", self.t_fine)
         
@@ -94,18 +94,18 @@ class Adafruit_BMP280:
         
         adc = self._read24(BMP280_REGISTER_PRESSUREDATA) / 16  # lowest 4 bits get dropped
         var1 = float(self.t_fine) / 2.0 - 64000.0
-        var2 = var1 * var1 * float(self.dig_P6) / 32768.0
-        var2 = var2 + var1 * float(self.dig_P5) * 2.0
-        var2 = var2 / 4.0 + float(self.dig_P4) * 65536.0
-        var1 = (float(self.dig_P3) * var1 * var1 / 524288.0 + float(self.dig_P2) * var1) / 524288.0
-        var1 = (1.0 + var1 / 32768.0) * float(self.dig_P1)
+        var2 = var1 * var1 * self.dig_P6 / 32768.0
+        var2 = var2 + var1 * self.dig_P5 * 2.0
+        var2 = var2 / 4.0 + self.dig_P4 * 65536.0
+        var1 = (self.dig_P3 * var1 * var1 / 524288.0 + self.dig_P2 * var1) / 524288.0
+        var1 = (1.0 + var1 / 32768.0) * self.dig_P1
         if var1 == 0:
             return 0
         p = 1048576.0 - adc
         p = ((p - var2 / 4096.0) * 6250.0) / var1
-        var1 = float(self.dig_P9) * p * p / 2147483648.0
-        var2 = p * float(self.dig_P8) / 32768.0
-        p = p + (var1 + var2 + float(self.dig_P7)) / 16.0
+        var1 = self.dig_P9 * p * p / 2147483648.0
+        var2 = p * self.dig_P8 / 32768.0
+        p = p + (var1 + var2 + self.dig_P7) / 16.0
         return p
 
     @property
@@ -115,18 +115,10 @@ class Adafruit_BMP280:
 
     def _read_coefficients(self):
         """Read & save the calibration coefficients"""
-        self.dig_T1 = self._read16_LE(BMP280_REGISTER_DIG_T1);
-        self.dig_T2 = self._readS16_LE(BMP280_REGISTER_DIG_T2);
-        self.dig_T3 = self._readS16_LE(BMP280_REGISTER_DIG_T3);
-        self.dig_P1 = self._read16_LE(BMP280_REGISTER_DIG_P1);
-        self.dig_P2 = self._readS16_LE(BMP280_REGISTER_DIG_P2);
-        self.dig_P3 = self._readS16_LE(BMP280_REGISTER_DIG_P3);
-        self.dig_P4 = self._readS16_LE(BMP280_REGISTER_DIG_P4);
-        self.dig_P5 = self._readS16_LE(BMP280_REGISTER_DIG_P5);
-        self.dig_P6 = self._readS16_LE(BMP280_REGISTER_DIG_P6);
-        self.dig_P7 = self._readS16_LE(BMP280_REGISTER_DIG_P7);
-        self.dig_P8 = self._readS16_LE(BMP280_REGISTER_DIG_P8);
-        self.dig_P9 = self._readS16_LE(BMP280_REGISTER_DIG_P9);
+        coeff = self._read_register(BMP280_REGISTER_DIG_T1, 24)
+        coeff = list(struct.unpack('<HhhHhhhhhhhh', bytes(coeff)))
+        coeff = [float(i) for i in coeff]
+        self.dig_T1, self.dig_T2, self.dig_T3 , self.dig_P1, self.dig_P2, self.dig_P3, self.dig_P4, self.dig_P5, self.dig_P6, self.dig_P7, self.dig_P8, self.dig_P9 = coeff
         #print("%d %d %d" % (self.dig_T1, self.dig_T2, self.dig_T3))
         #print("%d %d %d" % (self.dig_P1, self.dig_P2, self.dig_P3))
         #print("%d %d %d" % (self.dig_P4, self.dig_P5, self.dig_P6))
@@ -140,22 +132,10 @@ class Adafruit_BMP280:
         # Read a byte register value and return it.
         return self._read_register(register, 1)[0]
 
-    def _read16_LE(self, register):
-        # Read an unsigned 16-bit value and return it.
-        t = self._read_register(register, 2)
-        return (t[0] & 0xFF) | ((t[1] & 0xFF) << 8)
-
-    def _readS16_LE(self, register):
-        # Read an unsigned 16-bit value and return it.
-        x = self._read16_LE(register)
-        if x > 0x7FFF:
-            x -= 0x10000
-        return x
-
     def _read24(self, register):
         # Read an unsigned 24-bit value as a floating point and return it.
         ret = 0.0
-        for b in self._read_register(register, 3)[:3]:
+        for b in self._read_register(register, 3):
             ret *= 256.0
             ret += float(b & 0xFF)
         return ret
@@ -168,16 +148,14 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):
         super().__init__()
 
     def _read_register(self, register, length):
-        self._buffer[0] = register & 0xFF
         with self._i2c as i2c:
-            i2c.write(self._buffer, start=0, end=1)
-            i2c.read_into(self._buffer, start=0, end=length)
-            #print("$%02X => %s" % (register, [hex(i) for i in self._buffer[:length]]))
-            return self._buffer
+            i2c.write(bytes([register & 0xFF]))
+            result = bytearray(length)
+            i2c.read_into(result)
+            #print("$%02X => %s" % (register, [hex(i) for i in result]))
+            return result
 
     def _write_register_byte(self, register, value):
-        self._buffer[0] = register & 0xFF
-        self._buffer[1] = value & 0xFF
         with self._i2c as i2c:
-            i2c.write(self._buffer, start=0, end=2)
+            i2c.write(bytes([register & 0xFF, value & 0xFF]))
             #print("$%02X <= 0x%02X" % (register, value))
