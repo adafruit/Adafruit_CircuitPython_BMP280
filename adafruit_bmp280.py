@@ -23,7 +23,7 @@
 `adafruit_bmp280`
 ====================================================
 
-CircuitPython driver from BMP280 sensor
+CircuitPython driver from BMP280 Temperature and Barometic Pressure sensor
 
 * Author(s): ladyada
 """
@@ -40,6 +40,7 @@ BMP280_CHIPID  = const(0x58)
 
 BMP280_REGISTER_CHIPID  = const(0xD0)
 BMP280_REGISTER_DIG_T1  = const(0x88)
+"""
 BMP280_REGISTER_DIG_T2  = const(0x8A)
 BMP280_REGISTER_DIG_T3 = const(0x8C)
 BMP280_REGISTER_DIG_P1  = const(0x8E)
@@ -51,9 +52,8 @@ BMP280_REGISTER_DIG_P6  = const(0x98)
 BMP280_REGISTER_DIG_P7 = const(0x9A)
 BMP280_REGISTER_DIG_P8 = const(0x9C)
 BMP280_REGISTER_DIG_P9  = const(0x9E)
-BMP280_REGISTER_VERSION  = const(0xD1)
+"""
 BMP280_REGISTER_SOFTRESET  = const(0xE0)
-BMP280_REGISTER_CAL26  = const(0xE1)  # R calibration stored in 0xE1-0xF0
 BMP280_REGISTER_STATUS = const(0xF3)
 BMP280_REGISTER_CONTROL = const(0xF4)
 BMP280_REGISTER_CONFIG = const(0xF5)
@@ -62,16 +62,20 @@ BMP280_REGISTER_TEMPDATA = const(0xFA)
 
 class Adafruit_BMP280:
     def __init__(self):
+        """Check the BMP280 was found, read the coefficients and enable the sensor for continuous reads"""
         # Check device ID.
-        if BMP280_CHIPID != self._read_byte(BMP280_REGISTER_CHIPID):
-            raise RuntimeError('Failed to find BMP280!')
+        id = self._read_byte(BMP280_REGISTER_CHIPID)
+        if BMP280_CHIPID != id:
+            raise RuntimeError('Failed to find BMP280! Chip ID 0x%x' % id)
         self._read_coefficients()
-        self._write_byte(BMP280_REGISTER_CONTROL, 0x3F);
         self.seaLevelhPa = 1013.25
 
     @property
     def temperature(self):
         """Gets the compensated temperature in degrees celsius."""
+        # perform one measurement
+        self._write_register_byte(BMP280_REGISTER_CONTROL, 0xFE); # high res, forced mode
+        
         # Wait for conversion to complete
         while (self._read_byte(BMP280_REGISTER_STATUS) & 0x08):    
             time.sleep(0.002)
@@ -89,7 +93,7 @@ class Adafruit_BMP280:
 
     @property
     def pressure(self):
-        """Gets the compensated pressure in Pascals."""
+        """Gets the compensated pressure in hectoPascals."""
         self.temperature  # force read
         
         adc = self._read24(BMP280_REGISTER_PRESSUREDATA) / 16  # lowest 4 bits get dropped
@@ -106,10 +110,11 @@ class Adafruit_BMP280:
         var1 = self.dig_P9 * p * p / 2147483648.0
         var2 = p * self.dig_P8 / 32768.0
         p = p + (var1 + var2 + self.dig_P7) / 16.0
-        return p
+        return p / 100
 
     @property
     def altitude(self):
+        """calculate the altitude based on the sea level pressure (seaLevelPa) - which you must enter ahead of time)"""
         p = self.pressure / 100.0 # in Si units for Pascal
         return 44330 * (1.0 - math.pow(p / self.seaLevelhPa, 0.1903));
 
@@ -123,17 +128,13 @@ class Adafruit_BMP280:
         #print("%d %d %d" % (self.dig_P1, self.dig_P2, self.dig_P3))
         #print("%d %d %d" % (self.dig_P4, self.dig_P5, self.dig_P6))
         #print("%d %d %d" % (self.dig_P7, self.dig_P8, self.dig_P9))
-
-    def _write_byte(self, register, value):
-        # Write a byte register value
-        return self._write_register_byte(register, value)
      
     def _read_byte(self, register):
-        # Read a byte register value and return it.
+        """Read a byte register value and return it"""
         return self._read_register(register, 1)[0]
 
     def _read24(self, register):
-        # Read an unsigned 24-bit value as a floating point and return it.
+        """Read an unsigned 24-bit value as a floating point and return it."""
         ret = 0.0
         for b in self._read_register(register, 3):
             ret *= 256.0
@@ -144,7 +145,6 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):
     def __init__(self, i2c, address=BMP280_ADDRESS):
         import adafruit_bus_device.i2c_device as i2c_device
         self._i2c = i2c_device.I2CDevice(i2c, address)
-        self._buffer = bytearray(3)
         super().__init__()
 
     def _read_register(self, register, length):
@@ -159,3 +159,23 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF, value & 0xFF]))
             #print("$%02X <= 0x%02X" % (register, value))
+
+class Adafruit_BMP280_SPI(Adafruit_BMP280):
+    def __init__(self, spi, cs, baudrate=100000):
+        import adafruit_bus_device.spi_device as spi_device
+        self._spi = spi_device.SPIDevice(spi, cs, baudrate=baudrate)
+        super().__init__()
+
+    def _read_register(self, register, length):
+        register = (register | 0x80) & 0xFF  # Read single, bit 7 high.
+        with self._spi as spi:
+            spi.write(bytearray([register]))
+            result = bytearray(length)
+            spi.readinto(result)
+            #print("$%02X => %s" % (register, [hex(i) for i in result]))
+            return result
+
+    def _write_register_byte(self, register, value):
+        register &= 0x7F  # Write, bit 7 low.
+        with self._spi as spi:
+            spi.write(bytes([register, value & 0xFF]))
