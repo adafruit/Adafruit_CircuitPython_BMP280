@@ -114,8 +114,8 @@ class Adafruit_BMP280:
 
     @property
     def altitude(self):
-        """calculate the altitude based on the sea level pressure (seaLevelPa) - which you must enter ahead of time)"""
-        p = self.pressure / 100.0 # in Si units for Pascal
+        """calculate the altitude based on the sea level pressure (seaLevelhPa) - which you must enter ahead of time)"""
+        p = self.pressure # in Si units for hPascal
         return 44330 * (1.0 - math.pow(p / self.seaLevelhPa, 0.1903));
 
     def _read_coefficients(self):
