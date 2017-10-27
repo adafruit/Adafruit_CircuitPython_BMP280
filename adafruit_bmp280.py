@@ -65,7 +65,7 @@ class Adafruit_BMP280:
     def __init__(self):
         """Check the BMP280 was found, read the coefficients and enable the sensor for continuous reads"""
         # Check device ID.
-        id = self._read_byte(BMP280_REGISTER_CHIPID)
+        id = self._read_byte(_BMP280_REGISTER_CHIPID)
         if _BMP280_CHIPID != id:
             raise RuntimeError('Failed to find BMP280! Chip ID 0x%x' % id)
         self._read_coefficients()
@@ -124,7 +124,7 @@ class Adafruit_BMP280:
     ####################### Internal helpers ################################
     def _read_coefficients(self):
         """Read & save the calibration coefficients"""
-        coeff = self._read_register(BMP280_REGISTER_DIG_T1, 24)
+        coeff = self._read_register(_BMP280_REGISTER_DIG_T1, 24)
         coeff = list(struct.unpack('<HhhHhhhhhhhh', bytes(coeff)))
         coeff = [float(i) for i in coeff]
         self.dig_T1, self.dig_T2, self.dig_T3 , self.dig_P1, self.dig_P2, self.dig_P3, self.dig_P4, self.dig_P5, self.dig_P6, self.dig_P7, self.dig_P8, self.dig_P9 = coeff
@@ -146,7 +146,7 @@ class Adafruit_BMP280:
         return ret
     
 class Adafruit_BMP280_I2C(Adafruit_BMP280):
-    def __init__(self, i2c, address=BMP280_ADDRESS):
+    def __init__(self, i2c, address=_BMP280_ADDRESS):
         """Check the BMP280 was found, read the coefficients and enable the sensor for continuous reads. Default address is 0x77 but another address can be passed in as an argument"""
         import adafruit_bus_device.i2c_device as i2c_device
         self._i2c = i2c_device.I2CDevice(i2c, address)
