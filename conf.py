@@ -140,3 +140,6 @@ texinfo_documents = [
      author, 'AdafruitBMP280Library', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+# API docs fix
+autodoc_mock_imports = ['micropython']
