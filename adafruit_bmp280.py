@@ -36,7 +36,6 @@ except ImportError:
 
 #    I2C ADDRESS/BITS/SETTINGS
 #    -----------------------------------------------------------------------
-_BMP280_ADDRESS = const(0x77)
 _BMP280_CHIPID  = const(0x58)
 
 _BMP280_REGISTER_CHIPID  = const(0xD0)
@@ -62,26 +61,27 @@ _BMP280_REGISTER_PRESSUREDATA  = const(0xF7)
 _BMP280_REGISTER_TEMPDATA = const(0xFA)
 
 class Adafruit_BMP280:
+    """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This checks the BMP280 was found, reads the coefficients and enables the sensor for continuous reads"""
     def __init__(self):
-        """Check the BMP280 was found, read the coefficients and enable the sensor for continuous reads"""
         # Check device ID.
         id = self._read_byte(_BMP280_REGISTER_CHIPID)
         if _BMP280_CHIPID != id:
             raise RuntimeError('Failed to find BMP280! Chip ID 0x%x' % id)
         self._read_coefficients()
         self.seaLevelhPa = 1013.25
+        """Pressure in hectoPascals at sea level. Used to calibrate `altitude`."""
 
     @property
     def temperature(self):
         """The compensated temperature in degrees celsius."""
         # perform one measurement in high res, forced mode
         self._write_register_byte(_BMP280_REGISTER_CONTROL, 0xFE)
-        
+
         # Wait for conversion to complete
-        while (self._read_byte(_BMP280_REGISTER_STATUS) & 0x08):    
+        while (self._read_byte(_BMP280_REGISTER_STATUS) & 0x08):
             time.sleep(0.002)
         # lowest 4 bits get dropped
-        UT = self._read24(_BMP280_REGISTER_TEMPDATA) / 16 
+        UT = self._read24(_BMP280_REGISTER_TEMPDATA) / 16
         #print("raw temp: ", UT)
 
         var1 = (UT / 16384.0 - self.dig_T1 / 1024.0) * self.dig_T2
@@ -89,7 +89,7 @@ class Adafruit_BMP280:
             UT / 131072.0 - self.dig_T1 / 8192.0)) * self.dig_T3
         self.t_fine = int(var1 + var2)
         #print("t_fine: ", self.t_fine)
-        
+
         temp = (var1 + var2) / 5120.0
         return temp
 
@@ -117,7 +117,7 @@ class Adafruit_BMP280:
 
     @property
     def altitude(self):
-        """The altitude based on the sea level pressure (seaLevelhPa) - which you must enter ahead of time)"""
+        """The altitude based on the sea level pressure (`seaLevelhPa`) - which you must enter ahead of time)"""
         p = self.pressure # in Si units for hPascal
         return 44330 * (1.0 - math.pow(p / self.seaLevelhPa, 0.1903));
 
@@ -132,7 +132,7 @@ class Adafruit_BMP280:
         #print("%d %d %d" % (self.dig_P1, self.dig_P2, self.dig_P3))
         #print("%d %d %d" % (self.dig_P4, self.dig_P5, self.dig_P6))
         #print("%d %d %d" % (self.dig_P7, self.dig_P8, self.dig_P9))
-     
+
     def _read_byte(self, register):
         """Read a byte register value and return it"""
         return self._read_register(register, 1)[0]
@@ -144,10 +144,11 @@ class Adafruit_BMP280:
             ret *= 256.0
             ret += float(b & 0xFF)
         return ret
-    
+
+
 class Adafruit_BMP280_I2C(Adafruit_BMP280):
-    def __init__(self, i2c, address=_BMP280_ADDRESS):
-        """Check the BMP280 was found, read the coefficients and enable the sensor for continuous reads. Default address is 0x77 but another address can be passed in as an argument"""
+    """Driver for I2C connected BMP280. Default address is 0x77 but another address can be passed in as an argument"""
+    def __init__(self, i2c, address=0x77):
         import adafruit_bus_device.i2c_device as i2c_device
         self._i2c = i2c_device.I2CDevice(i2c, address)
         super().__init__()
@@ -168,8 +169,8 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):
             #print("$%02X <= 0x%02X" % (register, value))
 
 class Adafruit_BMP280_SPI(Adafruit_BMP280):
+    """Driver for SPI connected BMP280. Default clock rate is 100000 but can be changed with 'baudrate'"""
     def __init__(self, spi, cs, baudrate=100000):
-        """Check the BMP280 was found, read the coefficients and enable the sensor for continuous reads. Default clock rate is 100000 but can be changed with 'baudrate'"""
         import adafruit_bus_device.spi_device as spi_device
         self._spi = spi_device.SPIDevice(spi, cs, baudrate=baudrate)
         super().__init__()
