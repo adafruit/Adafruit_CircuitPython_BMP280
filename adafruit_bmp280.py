@@ -158,7 +158,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF]))
             result = bytearray(length)
-            i2c.read_into(result)
+            i2c.readinto(result)
             #print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
