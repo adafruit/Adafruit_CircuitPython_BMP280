@@ -71,7 +71,7 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         # Check device ID.
         chip_id = self._read_byte(_REGISTER_CHIPID)
         if _CHIP_ID != chip_id:
-            raise RuntimeError('Failed to find BMP280! Chip ID 0x%x' % id)
+            raise RuntimeError('Failed to find BMP280! Chip ID 0x%x' % chip_id)
         self._read_coefficients()
         self.sea_level_pressure = 1013.25
         """Pressure in hectoPascals at sea level. Used to calibrate `altitude`."""
@@ -160,11 +160,11 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         return ret
 
     def _read_register(self, register, length):
-        """Low level register reading over I2C, returns a list of values"""
+        """Low level register reading, not implemented in base class"""
         raise NotImplementedError()
 
     def _write_register_byte(self, register, value):
-        """Low level register writing over I2C, writes one 8-bit value"""
+        """Low level register writing, not implemented in base class"""
         raise NotImplementedError()
 
 class Adafruit_BMP280_I2C(Adafruit_BMP280): # pylint: disable=invalid-name
