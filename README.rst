@@ -30,9 +30,15 @@ This is easily achieved by downloading
 Installing from PyPI
 --------------------
 
-On the Raspberry Pi, you can install the driver
-`from PyPI <https://pypi.org/project/adafruit-circuitpython-bmp280/>`_.  To
-install system-wide, use:
+On supported GNU/Linux systems like the Raspberry Pi, you can install the driver
+`from PyPI <https://pypi.org/project/adafruit-circuitpython-bmp280/>`_. To install
+for the current user:
+
+.. code-block:: shell
+
+    pip3 install adafruit-circuitpython-bmp280
+
+To install system-wide (this may be required in some cases):
 
 .. code-block:: shell
 
