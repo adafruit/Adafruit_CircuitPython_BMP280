@@ -310,23 +310,19 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         var3 = self._pressure_calib[2] * var1 * var1 / 524288.0
         var1 = (var3 + self._pressure_calib[1] * var1) / 524288.0
         var1 = (1.0 + var1 / 32768.0) * self._pressure_calib[0]
-        if var1 == 0:
-            return 0
-        if var1:
-            pressure = 1048576.0 - adc
-            pressure = ((pressure - var2 / 4096.0) * 6250.0) / var1
-            var1 = self._pressure_calib[8] * pressure * pressure / 2147483648.0
-            var2 = pressure * self._pressure_calib[7] / 32768.0
-            pressure = pressure + (var1 + var2 + self._pressure_calib[6]) / 16.0
-
-            pressure /= 100
-            if pressure < _BMP280_PRESSURE_MIN_HPA:
-                return _BMP280_PRESSURE_MIN_HPA
-            if pressure > _BMP280_PRESSURE_MAX_HPA:
-                return _BMP280_PRESSURE_MAX_HPA
-            return pressure
-        else:
+        if not var1:
             return _BMP280_PRESSURE_MIN_HPA
+        pressure = 1048576.0 - adc
+        pressure = ((pressure - var2 / 4096.0) * 6250.0) / var1
+        var1 = self._pressure_calib[8] * pressure * pressure / 2147483648.0
+        var2 = pressure * self._pressure_calib[7] / 32768.0
+        pressure = pressure + (var1 + var2 + self._pressure_calib[6]) / 16.0
+        pressure /= 100
+        if pressure < _BMP280_PRESSURE_MIN_HPA:
+            return _BMP280_PRESSURE_MIN_HPA
+        if pressure > _BMP280_PRESSURE_MAX_HPA:
+            return _BMP280_PRESSURE_MAX_HPA
+        return pressure
 
     @property
     def altitude(self):
