@@ -62,8 +62,8 @@ IIR_FILTER_X4 = const(0x02)
 IIR_FILTER_X8 = const(0x03)
 IIR_FILTER_X16 = const(0x04)
 
-_BMP280_IIR_FILTERS = frozenset((IIR_FILTER_DISABLE, IIR_FILTER_X2,
-                                 IIR_FILTER_X4, IIR_FILTER_X8, IIR_FILTER_X16))
+_BMP280_IIR_FILTERS = (IIR_FILTER_DISABLE, IIR_FILTER_X2,
+                       IIR_FILTER_X4, IIR_FILTER_X8, IIR_FILTER_X16)
 
 """overscan values for temperature, pressure, and humidity"""
 OVERSCAN_DISABLE = const(0x00)
@@ -81,7 +81,7 @@ MODE_SLEEP = const(0x00)
 MODE_FORCE = const(0x01)
 MODE_NORMAL = const(0x03)
 
-_BMP280_MODES = frozenset((MODE_SLEEP, MODE_FORCE, MODE_NORMAL))
+_BMP280_MODES = (MODE_SLEEP, MODE_FORCE, MODE_NORMAL)
 """
 standby timeconstant values
 TC_X[_Y] where X=milliseconds and Y=tenths of a millisecond
@@ -95,9 +95,9 @@ STANDBY_TC_250 = const(0x03)    #250ms
 STANDBY_TC_500 = const(0x04)    #500ms
 STANDBY_TC_1000 = const(0x05)   #1000ms
 
-_BMP280_STANDBY_TCS = frozenset((STANDBY_TC_0_5, STANDBY_TC_10, STANDBY_TC_20,
-                                 STANDBY_TC_62_5, STANDBY_TC_125, STANDBY_TC_250,
-                                 STANDBY_TC_500, STANDBY_TC_1000))
+_BMP280_STANDBY_TCS = (STANDBY_TC_0_5, STANDBY_TC_10, STANDBY_TC_20,
+                       STANDBY_TC_62_5, STANDBY_TC_125, STANDBY_TC_250,
+                       STANDBY_TC_500, STANDBY_TC_1000)
 
 class Adafruit_BMP280: # pylint: disable=invalid-name
     """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This
