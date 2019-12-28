@@ -9,8 +9,8 @@ Introduction
     :target: https://discord.gg/nBQh6qu
     :alt: Discord
 
-.. image:: https://travis-ci.com/adafruit/Adafruit_CircuitPython_BMP280.svg?branch=master
-    :target: https://travis-ci.com/adafruit/Adafruit_CircuitPython_BMP280
+.. image:: https://github.com/adafruit/Adafruit_CircuitPython_BMP280/workflows/Build%20CI/badge.svg
+    :target: https://github.com/adafruit/Adafruit_CircuitPython_BMP280/actions/
     :alt: Build Status
 
 CircuitPython driver from BMP280 Temperature and Barometic Pressure sensor
