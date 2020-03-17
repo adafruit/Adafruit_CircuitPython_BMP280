@@ -29,6 +29,7 @@ CircuitPython driver from BMP280 Temperature and Barometic Pressure sensor
 """
 import math
 from time import sleep
+
 try:
     import struct
 except ImportError:
@@ -62,8 +63,13 @@ IIR_FILTER_X4 = const(0x02)
 IIR_FILTER_X8 = const(0x03)
 IIR_FILTER_X16 = const(0x04)
 
-_BMP280_IIR_FILTERS = (IIR_FILTER_DISABLE, IIR_FILTER_X2,
-                       IIR_FILTER_X4, IIR_FILTER_X8, IIR_FILTER_X16)
+_BMP280_IIR_FILTERS = (
+    IIR_FILTER_DISABLE,
+    IIR_FILTER_X2,
+    IIR_FILTER_X4,
+    IIR_FILTER_X8,
+    IIR_FILTER_X16,
+)
 
 """overscan values for temperature, pressure, and humidity"""
 OVERSCAN_DISABLE = const(0x00)
@@ -73,8 +79,14 @@ OVERSCAN_X4 = const(0x03)
 OVERSCAN_X8 = const(0x04)
 OVERSCAN_X16 = const(0x05)
 
-_BMP280_OVERSCANS = {OVERSCAN_DISABLE:0, OVERSCAN_X1:1, OVERSCAN_X2:2,
-                     OVERSCAN_X4:4, OVERSCAN_X8:8, OVERSCAN_X16:16}
+_BMP280_OVERSCANS = {
+    OVERSCAN_DISABLE: 0,
+    OVERSCAN_X1: 1,
+    OVERSCAN_X2: 2,
+    OVERSCAN_X4: 4,
+    OVERSCAN_X8: 8,
+    OVERSCAN_X16: 16,
+}
 
 """mode values"""
 MODE_SLEEP = const(0x00)
@@ -86,29 +98,38 @@ _BMP280_MODES = (MODE_SLEEP, MODE_FORCE, MODE_NORMAL)
 standby timeconstant values
 TC_X[_Y] where X=milliseconds and Y=tenths of a millisecond
 """
-STANDBY_TC_0_5 = const(0x00)    #0.5ms
-STANDBY_TC_10 = const(0x06)     #10ms
-STANDBY_TC_20 = const(0x07)     #20ms
-STANDBY_TC_62_5 = const(0x01)   #62.5ms
-STANDBY_TC_125 = const(0x02)    #125ms
-STANDBY_TC_250 = const(0x03)    #250ms
-STANDBY_TC_500 = const(0x04)    #500ms
-STANDBY_TC_1000 = const(0x05)   #1000ms
+STANDBY_TC_0_5 = const(0x00)  # 0.5ms
+STANDBY_TC_10 = const(0x06)  # 10ms
+STANDBY_TC_20 = const(0x07)  # 20ms
+STANDBY_TC_62_5 = const(0x01)  # 62.5ms
+STANDBY_TC_125 = const(0x02)  # 125ms
+STANDBY_TC_250 = const(0x03)  # 250ms
+STANDBY_TC_500 = const(0x04)  # 500ms
+STANDBY_TC_1000 = const(0x05)  # 1000ms
 
-_BMP280_STANDBY_TCS = (STANDBY_TC_0_5, STANDBY_TC_10, STANDBY_TC_20,
-                       STANDBY_TC_62_5, STANDBY_TC_125, STANDBY_TC_250,
-                       STANDBY_TC_500, STANDBY_TC_1000)
+_BMP280_STANDBY_TCS = (
+    STANDBY_TC_0_5,
+    STANDBY_TC_10,
+    STANDBY_TC_20,
+    STANDBY_TC_62_5,
+    STANDBY_TC_125,
+    STANDBY_TC_250,
+    STANDBY_TC_500,
+    STANDBY_TC_1000,
+)
 
-class Adafruit_BMP280: # pylint: disable=invalid-name
+
+class Adafruit_BMP280:  # pylint: disable=invalid-name
     """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This
        checks the BMP280 was found, reads the coefficients and enables the sensor for continuous
        reads"""
+
     def __init__(self):
         # Check device ID.
         chip_id = self._read_byte(_REGISTER_CHIPID)
         if _CHIP_ID != chip_id:
-            raise RuntimeError('Failed to find BMP280! Chip ID 0x%x' % chip_id)
-        #Set some reasonable defaults.
+            raise RuntimeError("Failed to find BMP280! Chip ID 0x%x" % chip_id)
+        # Set some reasonable defaults.
         self._iir_filter = IIR_FILTER_DISABLE
         self._overscan_temperature = OVERSCAN_X2
         self._overscan_pressure = OVERSCAN_X16
@@ -129,21 +150,27 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
             # Wait for conversion to complete
             while self._get_status() & 0x08:
                 sleep(0.002)
-        raw_temperature = self._read24(_REGISTER_TEMPDATA) / 16 # lowest 4 bits get dropped
-        #print("raw temp: ", UT)
-        var1 = (raw_temperature / 16384.0 - self._temp_calib[0] / 1024.0) * self._temp_calib[1]
-        #print(var1)
-        var2 = ((raw_temperature / 131072.0 - self._temp_calib[0] / 8192.0) * (
-            raw_temperature / 131072.0 - self._temp_calib[0] / 8192.0)) * self._temp_calib[2]
-        #print(var2)
+        raw_temperature = (
+            self._read24(_REGISTER_TEMPDATA) / 16
+        )  # lowest 4 bits get dropped
+        # print("raw temp: ", UT)
+        var1 = (
+            raw_temperature / 16384.0 - self._temp_calib[0] / 1024.0
+        ) * self._temp_calib[1]
+        # print(var1)
+        var2 = (
+            (raw_temperature / 131072.0 - self._temp_calib[0] / 8192.0)
+            * (raw_temperature / 131072.0 - self._temp_calib[0] / 8192.0)
+        ) * self._temp_calib[2]
+        # print(var2)
 
         self._t_fine = int(var1 + var2)
-        #print("t_fine: ", self.t_fine)
+        # print("t_fine: ", self.t_fine)
 
     def _reset(self):
         """Soft reset the sensor"""
         self._write_register_byte(_REGISTER_SOFTRESET, 0xB6)
-        sleep(0.004)  #Datasheet says 2ms.  Using 4ms just to be safe
+        sleep(0.004)  # Datasheet says 2ms.  Using 4ms just to be safe
 
     def _write_ctrl_meas(self):
         """
@@ -164,9 +191,9 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         """Write the value to the config register in the device """
         normal_flag = False
         if self._mode == MODE_NORMAL:
-            #Writes to the config register may be ignored while in Normal mode
+            # Writes to the config register may be ignored while in Normal mode
             normal_flag = True
-            self.mode = MODE_SLEEP #So we switch to Sleep mode first
+            self.mode = MODE_SLEEP  # So we switch to Sleep mode first
         self._write_register_byte(_REGISTER_CONFIG, self._config)
         if normal_flag:
             self.mode = MODE_NORMAL
@@ -182,7 +209,7 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
     @mode.setter
     def mode(self, value):
         if not value in _BMP280_MODES:
-            raise ValueError('Mode \'%s\' not supported' % (value))
+            raise ValueError("Mode '%s' not supported" % (value))
         self._mode = value
         self._write_ctrl_meas()
 
@@ -197,7 +224,7 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
     @standby_period.setter
     def standby_period(self, value):
         if not value in _BMP280_STANDBY_TCS:
-            raise ValueError('Standby Period \'%s\' not supported' % (value))
+            raise ValueError("Standby Period '%s' not supported" % (value))
         if self._t_standby == value:
             return
         self._t_standby = value
@@ -214,7 +241,7 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
     @overscan_temperature.setter
     def overscan_temperature(self, value):
         if not value in _BMP280_OVERSCANS:
-            raise ValueError('Overscan value \'%s\' not supported' % (value))
+            raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_temperature = value
         self._write_ctrl_meas()
 
@@ -229,7 +256,7 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
     @overscan_pressure.setter
     def overscan_pressure(self, value):
         if not value in _BMP280_OVERSCANS:
-            raise ValueError('Overscan value \'%s\' not supported' % (value))
+            raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_pressure = value
         self._write_ctrl_meas()
 
@@ -244,7 +271,7 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
     @iir_filter.setter
     def iir_filter(self, value):
         if not value in _BMP280_IIR_FILTERS:
-            raise ValueError('IIR Filter \'%s\' not supported' % (value))
+            raise ValueError("IIR Filter '%s' not supported" % (value))
         self._iir_filter = value
         self._write_config()
 
@@ -253,16 +280,16 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         """Value to be written to the device's config register """
         config = 0
         if self.mode == MODE_NORMAL:
-            config += (self._t_standby << 5)
+            config += self._t_standby << 5
         if self._iir_filter:
-            config += (self._iir_filter << 2)
+            config += self._iir_filter << 2
         return config
 
     @property
     def _ctrl_meas(self):
         """Value to be written to the device's ctrl_meas register """
-        ctrl_meas = (self.overscan_temperature << 5)
-        ctrl_meas += (self.overscan_pressure << 2)
+        ctrl_meas = self.overscan_temperature << 5
+        ctrl_meas += self.overscan_pressure << 2
         ctrl_meas += self.mode
         return ctrl_meas
 
@@ -271,9 +298,9 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         """Typical time in milliseconds required to complete a measurement in normal mode"""
         meas_time_ms = 1
         if self.overscan_temperature != OVERSCAN_DISABLE:
-            meas_time_ms += (2 * _BMP280_OVERSCANS.get(self.overscan_temperature))
+            meas_time_ms += 2 * _BMP280_OVERSCANS.get(self.overscan_temperature)
         if self.overscan_pressure != OVERSCAN_DISABLE:
-            meas_time_ms += (2 * _BMP280_OVERSCANS.get(self.overscan_pressure) + 0.5)
+            meas_time_ms += 2 * _BMP280_OVERSCANS.get(self.overscan_pressure) + 0.5
         return meas_time_ms
 
     @property
@@ -281,9 +308,9 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         """Maximum time in milliseconds required to complete a measurement in normal mode"""
         meas_time_ms = 1.25
         if self.overscan_temperature != OVERSCAN_DISABLE:
-            meas_time_ms += (2.3 * _BMP280_OVERSCANS.get(self.overscan_temperature))
+            meas_time_ms += 2.3 * _BMP280_OVERSCANS.get(self.overscan_temperature)
         if self.overscan_pressure != OVERSCAN_DISABLE:
-            meas_time_ms += (2.3 * _BMP280_OVERSCANS.get(self.overscan_pressure) + 0.575)
+            meas_time_ms += 2.3 * _BMP280_OVERSCANS.get(self.overscan_pressure) + 0.575
         return meas_time_ms
 
     @property
@@ -328,14 +355,14 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
     def altitude(self):
         """The altitude based on the sea level pressure (`sea_level_pressure`) - which you must
            enter ahead of time)"""
-        p = self.pressure # in Si units for hPascal
+        p = self.pressure  # in Si units for hPascal
         return 44330 * (1.0 - math.pow(p / self.sea_level_pressure, 0.1903))
 
     ####################### Internal helpers ################################
     def _read_coefficients(self):
         """Read & save the calibration coefficients"""
         coeff = self._read_register(_REGISTER_DIG_T1, 24)
-        coeff = list(struct.unpack('<HhhHhhhhhhhh', bytes(coeff)))
+        coeff = list(struct.unpack("<HhhHhhhhhhhh", bytes(coeff)))
         coeff = [float(i) for i in coeff]
         # The temp_calib lines up with DIG_T# registers.
         self._temp_calib = coeff[:3]
@@ -368,11 +395,14 @@ class Adafruit_BMP280: # pylint: disable=invalid-name
         """Low level register writing, not implemented in base class"""
         raise NotImplementedError()
 
-class Adafruit_BMP280_I2C(Adafruit_BMP280): # pylint: disable=invalid-name
+
+class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
     """Driver for I2C connected BMP280. Default address is 0x77 but another address can be passed
        in as an argument"""
+
     def __init__(self, i2c, address=0x77):
-        import adafruit_bus_device.i2c_device as i2c_device
+        import adafruit_bus_device.i2c_device as i2c_device  # pylint: disable=import-outside-toplevel
+
         self._i2c = i2c_device.I2CDevice(i2c, address)
         super().__init__()
 
@@ -382,20 +412,23 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280): # pylint: disable=invalid-name
             i2c.write(bytes([register & 0xFF]))
             result = bytearray(length)
             i2c.readinto(result)
-            #print("$%02X => %s" % (register, [hex(i) for i in result]))
+            # print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
     def _write_register_byte(self, register, value):
         """Low level register writing over I2C, writes one 8-bit value"""
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF, value & 0xFF]))
-            #print("$%02X <= 0x%02X" % (register, value))
+            # print("$%02X <= 0x%02X" % (register, value))
+
 
 class Adafruit_BMP280_SPI(Adafruit_BMP280):
     """Driver for SPI connected BMP280. Default clock rate is 100000 but can be changed with
       'baudrate'"""
+
     def __init__(self, spi, cs, baudrate=100000):
-        import adafruit_bus_device.spi_device as spi_device
+        import adafruit_bus_device.spi_device as spi_device  # pylint: disable=import-outside-toplevel
+
         self._spi = spi_device.SPIDevice(spi, cs, baudrate=baudrate)
         super().__init__()
 
@@ -407,7 +440,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
             spi.write(bytearray([register]))
             result = bytearray(length)
             spi.readinto(result)
-            #print("$%02X => %s" % (register, [hex(i) for i in result]))
+            # print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
     def _write_register_byte(self, register, value):
