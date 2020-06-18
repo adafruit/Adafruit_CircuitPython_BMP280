@@ -2,6 +2,7 @@
    pressure, and altitude readings from a BMP280"""
 import time
 import board
+
 # import digitalio # For use with SPI
 import busio
 import adafruit_bmp280
