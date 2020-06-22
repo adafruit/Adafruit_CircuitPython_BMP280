@@ -1,10 +1,10 @@
+"""Simpletest Example that shows how to get temperature,
+   pressure, and altitude readings from a BMP280"""
 import time
-
 import board
 
 # import digitalio # For use with SPI
 import busio
-
 import adafruit_bmp280
 
 # Create library object using our Bus I2C port
