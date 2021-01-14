@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 """Simpletest Example that shows how to get temperature,
    pressure, and altitude readings from a BMP280"""
 import time
