@@ -1,24 +1,7 @@
-# The MIT License (MIT)
+# SPDX-FileCopyrightText: 2017 ladyada for Adafruit Industries
 #
-# Copyright (c) 2017 ladyada for Adafruit Industries
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
+# SPDX-License-Identifier: MIT
+
 """
 `adafruit_bmp280` - Adafruit BMP280 - Temperature & Barometic Pressure Sensor
 ===============================================================================
@@ -121,8 +104,8 @@ _BMP280_STANDBY_TCS = (
 
 class Adafruit_BMP280:  # pylint: disable=invalid-name
     """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This
-       checks the BMP280 was found, reads the coefficients and enables the sensor for continuous
-       reads"""
+    checks the BMP280 was found, reads the coefficients and enables the sensor for continuous
+    reads"""
 
     def __init__(self):
         # Check device ID.
@@ -354,7 +337,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
     @property
     def altitude(self):
         """The altitude based on the sea level pressure (`sea_level_pressure`) - which you must
-           enter ahead of time)"""
+        enter ahead of time)"""
         p = self.pressure  # in Si units for hPascal
         return 44330 * (1.0 - math.pow(p / self.sea_level_pressure, 0.1903))
 
@@ -398,7 +381,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
 class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
     """Driver for I2C connected BMP280. Default address is 0x77 but another address can be passed
-       in as an argument"""
+    in as an argument"""
 
     def __init__(self, i2c, address=0x77):
         import adafruit_bus_device.i2c_device as i2c_device  # pylint: disable=import-outside-toplevel
@@ -424,7 +407,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
 
 class Adafruit_BMP280_SPI(Adafruit_BMP280):
     """Driver for SPI connected BMP280. Default clock rate is 100000 but can be changed with
-      'baudrate'"""
+    'baudrate'"""
 
     def __init__(self, spi, cs, baudrate=100000):
         import adafruit_bus_device.spi_device as spi_device  # pylint: disable=import-outside-toplevel
