@@ -102,7 +102,13 @@ _BMP280_STANDBY_TCS = (
 class Adafruit_BMP280:  # pylint: disable=invalid-name
     """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This
     checks the BMP280 was found, reads the coefficients and enables the sensor for continuous
-    reads"""
+    reads
+
+    .. note::
+        The operational range of the BMP280 is 300-1100 hPa.
+        Pressure measurements outside this range may not be as accurate.
+
+    """
 
     def __init__(self):
         # Check device ID.
@@ -155,7 +161,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
     def _write_ctrl_meas(self):
         """
         Write the values to the ctrl_meas register in the device
-        ctrl_meas sets the pressure and temperature data acquistion options
+        ctrl_meas sets the pressure and temperature data acquisition options
         """
         self._write_register_byte(_REGISTER_CTRL_MEAS, self._ctrl_meas)
 
