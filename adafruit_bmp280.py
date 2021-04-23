@@ -35,9 +35,6 @@ _REGISTER_CONFIG = const(0xF5)
 _REGISTER_PRESSUREDATA = const(0xF7)
 _REGISTER_TEMPDATA = const(0xFA)
 
-_BMP280_PRESSURE_MIN_HPA = const(300)
-_BMP280_PRESSURE_MAX_HPA = const(1100)
-
 
 """iir_filter values"""
 IIR_FILTER_DISABLE = const(0)
@@ -105,7 +102,13 @@ _BMP280_STANDBY_TCS = (
 class Adafruit_BMP280:  # pylint: disable=invalid-name
     """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This
     checks the BMP280 was found, reads the coefficients and enables the sensor for continuous
-    reads"""
+    reads
+
+    .. note::
+        The operational range of the BMP280 is 300-1100 hPa.
+        Pressure measurements outside this range may not be as accurate.
+
+    """
 
     def __init__(self):
         # Check device ID.
@@ -158,7 +161,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
     def _write_ctrl_meas(self):
         """
         Write the values to the ctrl_meas register in the device
-        ctrl_meas sets the pressure and temperature data acquistion options
+        ctrl_meas sets the pressure and temperature data acquisition options
         """
         self._write_register_byte(_REGISTER_CTRL_MEAS, self._ctrl_meas)
 
@@ -320,18 +323,17 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         var3 = self._pressure_calib[2] * var1 * var1 / 524288.0
         var1 = (var3 + self._pressure_calib[1] * var1) / 524288.0
         var1 = (1.0 + var1 / 32768.0) * self._pressure_calib[0]
-        if not var1:
-            return _BMP280_PRESSURE_MIN_HPA
+        if not var1:  # avoid exception caused by division by zero
+            raise ArithmeticError(
+                "Invalid result possibly related to error while reading the calibration registers"
+            )
         pressure = 1048576.0 - adc
         pressure = ((pressure - var2 / 4096.0) * 6250.0) / var1
         var1 = self._pressure_calib[8] * pressure * pressure / 2147483648.0
         var2 = pressure * self._pressure_calib[7] / 32768.0
         pressure = pressure + (var1 + var2 + self._pressure_calib[6]) / 16.0
         pressure /= 100
-        if pressure < _BMP280_PRESSURE_MIN_HPA:
-            return _BMP280_PRESSURE_MIN_HPA
-        if pressure > _BMP280_PRESSURE_MAX_HPA:
-            return _BMP280_PRESSURE_MAX_HPA
+
         return pressure
 
     @property
