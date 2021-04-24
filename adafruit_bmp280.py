@@ -3,12 +3,26 @@
 # SPDX-License-Identifier: MIT
 
 """
-`adafruit_bmp280` - Adafruit BMP280 - Temperature & Barometic Pressure Sensor
+`adafruit_bmp280`
 ===============================================================================
 
-CircuitPython driver from BMP280 Temperature and Barometic Pressure sensor
+CircuitPython driver from BMP280 Temperature and Barometric Pressure sensor
 
 * Author(s): ladyada
+
+Implementation Notes
+--------------------
+
+**Hardware:**
+
+* `Adafruit from BMP280 Temperature and Barometric
+  Pressure sensor <https://www.adafruit.com/product/2651>`_
+
+**Software and Dependencies:**
+
+* Adafruit CircuitPython firmware for the supported boards:
+  https://github.com/adafruit/circuitpython/releases
+* Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 import math
 from time import sleep
@@ -100,9 +114,9 @@ _BMP280_STANDBY_TCS = (
 
 
 class Adafruit_BMP280:  # pylint: disable=invalid-name
-    """Base BMP280 object. Use `Adafruit_BMP280_I2C` or `Adafruit_BMP280_SPI` instead of this. This
-    checks the BMP280 was found, reads the coefficients and enables the sensor for continuous
-    reads
+    """Base BMP280 object. Use :class:`Adafruit_BMP280_I2C` or :class:`Adafruit_BMP280_SPI`
+    instead of this. This checks the BMP280 was found, reads the coefficients and
+    enables the sensor for continuous reads
 
     .. note::
         The operational range of the BMP280 is 300-1100 hPa.
@@ -301,7 +315,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
     @property
     def temperature(self):
-        """The compensated temperature in degrees celsius."""
+        """The compensated temperature in degrees Celsius."""
         self._read_temperature()
         return self._t_fine / 5120.0
 
@@ -309,7 +323,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
     def pressure(self):
         """
         The compensated pressure in hectoPascals.
-        returns None if pressure measurement is disabled
+        returns `None` if pressure measurement is disabled
         """
         self._read_temperature()
 
@@ -338,8 +352,8 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
     @property
     def altitude(self):
-        """The altitude based on the sea level pressure (`sea_level_pressure`) - which you must
-        enter ahead of time)"""
+        """The altitude based on the sea level pressure (:attr:`sea_level_pressure`)
+        - which you must enter ahead of time)"""
         p = self.pressure  # in Si units for hPascal
         return 44330 * (1.0 - math.pow(p / self.sea_level_pressure, 0.1903))
 
@@ -382,8 +396,45 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
 
 class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
-    """Driver for I2C connected BMP280. Default address is 0x77 but another address can be passed
-    in as an argument"""
+    """Driver for I2C connected BMP280.
+
+    :param ~busio.I2C i2c: The I2C bus the BMP280 is connected to.
+    :param int address: I2C device address. Defaults to :const:`0x77`.
+                        but another address can be passed in as an argument
+
+    **Quickstart: Importing and using the BMP280**
+
+        Here is an example of using the :class:`BMP280_I2C` class.
+        First you will need to import the libraries to use the sensor
+
+        .. code-block:: python
+
+            import board
+            import adafruit_bmp280
+
+        Once this is done you can define your `board.I2C` object and define your sensor object
+
+        .. code-block:: python
+
+            i2c = board.I2C()   # uses board.SCL and board.SDA
+            bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c)
+
+        You need to setup the pressure at sea level
+
+        .. code-block:: python
+
+            bmp280.sea_level_pressure = 1013.25
+
+        Now you have access to the :attr:`temperature`,
+        :attr:`pressure` and :attr:`altitude` attributes
+
+        .. code-block:: python
+
+            temperature = bmp280.temperature
+            pressure = bmp280.pressure
+            altitude = bmp280.altitude
+
+    """
 
     def __init__(self, i2c, address=0x77):
         import adafruit_bus_device.i2c_device as i2c_device  # pylint: disable=import-outside-toplevel
@@ -408,8 +459,49 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
 
 
 class Adafruit_BMP280_SPI(Adafruit_BMP280):
-    """Driver for SPI connected BMP280. Default clock rate is 100000 but can be changed with
-    'baudrate'"""
+    """Driver for SPI connected BMP280.
+
+    :param ~busio.SPI spi: SPI device
+    :param ~digitalio.DigitalInOut cs: Chip Select
+    :param int baudrate: Clock rate, default is 100000. Can be changed with :meth:`baudrate`
+
+
+    **Quickstart: Importing and using the BMP280**
+
+        Here is an example of using the :class:`BMP280_SPI` class.
+        First you will need to import the libraries to use the sensor
+
+        .. code-block:: python
+
+            import board
+            from digitalio import DigitalInOut, Direction
+            import adafruit_bmp280
+
+
+        Once this is done you can define your `board.SPI` object and define your sensor object
+
+        .. code-block:: python
+
+            cs = digitalio.DigitalInOut(board.D10)
+            spi = board.SPI()
+            bme280 = adafruit_bmp280.Adafruit_bmp280_SPI(spi, cs)
+
+        You need to setup the pressure at sea level
+
+        .. code-block:: python
+
+            bmp280.sea_level_pressure = 1013.25
+
+        Now you have access to the :attr:`temperature`, :attr:`pressure` and
+        :attr:`altitude` attributes
+
+        .. code-block:: python
+
+            temperature = bmp280.temperature
+            pressure = bmp280.pressure
+            altitude = bmp280.altitude
+
+    """
 
     def __init__(self, spi, cs, baudrate=100000):
         import adafruit_bus_device.spi_device as spi_device  # pylint: disable=import-outside-toplevel
