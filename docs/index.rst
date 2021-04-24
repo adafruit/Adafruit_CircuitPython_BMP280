@@ -23,6 +23,8 @@ Table of Contents
 .. toctree::
     :caption: Tutorials
 
+    Adafruit BMP280 I2C or SPI Barometric Pressure & Altitude Sensor Learning Guide <https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout>
+
 .. toctree::
     :caption: Related Products
 

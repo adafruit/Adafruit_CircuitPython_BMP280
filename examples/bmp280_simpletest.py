@@ -7,15 +7,14 @@ import time
 import board
 
 # import digitalio # For use with SPI
-import busio
 import adafruit_bmp280
 
-# Create library object using our Bus I2C port
-i2c = busio.I2C(board.SCL, board.SDA)
+# Create sensor object, communicating over the board's default I2C bus
+i2c = board.I2C()  # uses board.SCL and board.SDA
 bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c)
 
-# OR create library object using our Bus SPI port
-# spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
+# OR Create sensor object, communicating over the board's default SPI bus
+# spi = board.SPI()
 # bmp_cs = digitalio.DigitalInOut(board.D10)
 # bmp280 = adafruit_bmp280.Adafruit_BMP280_SPI(spi, bmp_cs)
 
