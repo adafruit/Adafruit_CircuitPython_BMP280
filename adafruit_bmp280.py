@@ -25,12 +25,9 @@ Implementation Notes
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 import math
+import struct
 from time import sleep
 
-try:
-    import struct
-except ImportError:
-    import ustruct as struct
 from micropython import const
 
 __version__ = "0.0.0-auto.0"
