@@ -177,15 +177,15 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         self._write_register_byte(_REGISTER_CTRL_MEAS, self._ctrl_meas)
 
     def _get_status(self):
-        """Get the value from the status register in the device """
+        """Get the value from the status register in the device"""
         return self._read_byte(_REGISTER_STATUS)
 
     def _read_config(self):
-        """Read the value from the config register in the device """
+        """Read the value from the config register in the device"""
         return self._read_byte(_REGISTER_CONFIG)
 
     def _write_config(self):
-        """Write the value to the config register in the device """
+        """Write the value to the config register in the device"""
         normal_flag = False
         if self._mode == MODE_NORMAL:
             # Writes to the config register may be ignored while in Normal mode
@@ -274,7 +274,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
     @property
     def _config(self):
-        """Value to be written to the device's config register """
+        """Value to be written to the device's config register"""
         config = 0
         if self.mode == MODE_NORMAL:
             config += self._t_standby << 5
@@ -284,7 +284,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
     @property
     def _ctrl_meas(self):
-        """Value to be written to the device's ctrl_meas register """
+        """Value to be written to the device's ctrl_meas register"""
         ctrl_meas = self.overscan_temperature << 5
         ctrl_meas += self.overscan_pressure << 2
         ctrl_meas += self.mode
