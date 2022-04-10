@@ -30,6 +30,15 @@ from time import sleep
 
 from micropython import const
 
+# Used only for type annotations.
+from busio import SPI
+from digitalio import DigitalInOut
+
+try:
+    from typing import Optional
+except ImportError:
+    pass
+
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_BMP280.git"
 
@@ -371,11 +380,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         # print("%d %d %d" % (self._pressure_calib[6], self._pressure_calib[7],
         #                     self._pressure_calib[8]))
 
-    def _read_byte(self, register : int):
+    def _read_byte(self, register : int) -> int:
         """Read a byte register value and return it"""
         return self._read_register(register, 1)[0]
 
-    def _read24(self, register : int):
+    def _read24(self, register : int) -> float:
         """Read an unsigned 24-bit value as a floating point and return it."""
         ret = 0.0
         for b in self._read_register(register, 3):
@@ -441,7 +450,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
         self._i2c = i2c_device.I2CDevice(i2c, address)
         super().__init__()
 
-    def _read_register(self, register : int, length : int):
+    def _read_register(self, register : int, length : int) -> bytearray:
         """Low level register reading over I2C, returns a list of values"""
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF]))
@@ -502,7 +511,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
 
     """
 
-    def __init__(self, spi, cs, baudrate=100000):
+    def __init__(self, spi : SPI, cs : Optional[DigitalInOut] = None, baudrate=100000) -> bytearray:
         from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
             spi_device,
         )
@@ -510,7 +519,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
         self._spi = spi_device.SPIDevice(spi, cs, baudrate=baudrate)
         super().__init__()
 
-    def _read_register(self, register, length):
+    def _read_register(self, register : int, length : int):
         """Low level register reading over SPI, returns a list of values"""
         register = (register | 0x80) & 0xFF  # Read single, bit 7 high.
         with self._spi as spi:
@@ -521,7 +530,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
             # print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
-    def _write_register_byte(self, register, value):
+    def _write_register_byte(self, register : int, value : int):
         """Low level register writing over SPI, writes one 8-bit value"""
         register &= 0x7F  # Write, bit 7 low.
         with self._spi as spi:
