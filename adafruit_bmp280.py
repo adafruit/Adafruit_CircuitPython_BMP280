@@ -204,7 +204,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._mode
 
     @mode.setter
-    def mode(self, value):
+    def mode(self, value : int):
         if not value in _BMP280_MODES:
             raise ValueError("Mode '%s' not supported" % (value))
         self._mode = value
@@ -219,7 +219,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._t_standby
 
     @standby_period.setter
-    def standby_period(self, value):
+    def standby_period(self, value : int):
         if not value in _BMP280_STANDBY_TCS:
             raise ValueError("Standby Period '%s' not supported" % (value))
         if self._t_standby == value:
@@ -236,7 +236,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_temperature
 
     @overscan_temperature.setter
-    def overscan_temperature(self, value):
+    def overscan_temperature(self, value : int):
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_temperature = value
@@ -251,7 +251,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_pressure
 
     @overscan_pressure.setter
-    def overscan_pressure(self, value):
+    def overscan_pressure(self, value : int):
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_pressure = value
@@ -266,7 +266,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._iir_filter
 
     @iir_filter.setter
-    def iir_filter(self, value):
+    def iir_filter(self, value : int):
         if not value in _BMP280_IIR_FILTERS:
             raise ValueError("IIR Filter '%s' not supported" % (value))
         self._iir_filter = value
