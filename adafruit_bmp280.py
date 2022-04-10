@@ -371,11 +371,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         # print("%d %d %d" % (self._pressure_calib[6], self._pressure_calib[7],
         #                     self._pressure_calib[8]))
 
-    def _read_byte(self, register):
+    def _read_byte(self, register : int):
         """Read a byte register value and return it"""
         return self._read_register(register, 1)[0]
 
-    def _read24(self, register):
+    def _read24(self, register : int):
         """Read an unsigned 24-bit value as a floating point and return it."""
         ret = 0.0
         for b in self._read_register(register, 3):
@@ -383,11 +383,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
             ret += float(b & 0xFF)
         return ret
 
-    def _read_register(self, register, length):
+    def _read_register(self, register : int, length : int):
         """Low level register reading, not implemented in base class"""
         raise NotImplementedError()
 
-    def _write_register_byte(self, register, value):
+    def _write_register_byte(self, register : int, value : int):
         """Low level register writing, not implemented in base class"""
         raise NotImplementedError()
 
@@ -433,7 +433,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
 
     """
 
-    def __init__(self, i2c, address=0x77):
+    def __init__(self, i2c : int, address=0x77):
         from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
             i2c_device,
         )
@@ -441,7 +441,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
         self._i2c = i2c_device.I2CDevice(i2c, address)
         super().__init__()
 
-    def _read_register(self, register, length):
+    def _read_register(self, register : int, length : int):
         """Low level register reading over I2C, returns a list of values"""
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF]))
@@ -450,7 +450,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
             # print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
-    def _write_register_byte(self, register, value):
+    def _write_register_byte(self, register : int, value : int):
         """Low level register writing over I2C, writes one 8-bit value"""
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF, value & 0xFF]))
