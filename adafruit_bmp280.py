@@ -2,6 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 
+# SPDX-FileCopyrightText: 2022 Bill Van Leeuwen for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
+
 """
 `adafruit_bmp280`
 ===============================================================================
