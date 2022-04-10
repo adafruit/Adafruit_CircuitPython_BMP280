@@ -217,7 +217,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._mode
 
     @mode.setter
-    def mode(self, value : int):
+    def mode(self, value: int):
         if not value in _BMP280_MODES:
             raise ValueError("Mode '%s' not supported" % (value))
         self._mode = value
@@ -232,7 +232,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._t_standby
 
     @standby_period.setter
-    def standby_period(self, value : int):
+    def standby_period(self, value: int):
         if not value in _BMP280_STANDBY_TCS:
             raise ValueError("Standby Period '%s' not supported" % (value))
         if self._t_standby == value:
@@ -249,7 +249,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_temperature
 
     @overscan_temperature.setter
-    def overscan_temperature(self, value : int):
+    def overscan_temperature(self, value: int):
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_temperature = value
@@ -264,7 +264,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_pressure
 
     @overscan_pressure.setter
-    def overscan_pressure(self, value : int):
+    def overscan_pressure(self, value: int):
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_pressure = value
@@ -279,7 +279,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._iir_filter
 
     @iir_filter.setter
-    def iir_filter(self, value : int):
+    def iir_filter(self, value: int):
         if not value in _BMP280_IIR_FILTERS:
             raise ValueError("IIR Filter '%s' not supported" % (value))
         self._iir_filter = value
@@ -384,11 +384,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         # print("%d %d %d" % (self._pressure_calib[6], self._pressure_calib[7],
         #                     self._pressure_calib[8]))
 
-    def _read_byte(self, register : int) -> int:
+    def _read_byte(self, register: int) -> int:
         """Read a byte register value and return it"""
         return self._read_register(register, 1)[0]
 
-    def _read24(self, register : int) -> float:
+    def _read24(self, register: int) -> float:
         """Read an unsigned 24-bit value as a floating point and return it."""
         ret = 0.0
         for b in self._read_register(register, 3):
@@ -396,11 +396,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
             ret += float(b & 0xFF)
         return ret
 
-    def _read_register(self, register : int, length : int):
+    def _read_register(self, register: int, length: int):
         """Low level register reading, not implemented in base class"""
         raise NotImplementedError()
 
-    def _write_register_byte(self, register : int, value : int):
+    def _write_register_byte(self, register: int, value: int):
         """Low level register writing, not implemented in base class"""
         raise NotImplementedError()
 
@@ -446,7 +446,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
 
     """
 
-    def __init__(self, i2c : int, address=0x77):
+    def __init__(self, i2c: int, address=0x77):
         from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
             i2c_device,
         )
@@ -454,7 +454,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
         self._i2c = i2c_device.I2CDevice(i2c, address)
         super().__init__()
 
-    def _read_register(self, register : int, length : int) -> bytearray:
+    def _read_register(self, register: int, length: int) -> bytearray:
         """Low level register reading over I2C, returns a list of values"""
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF]))
@@ -463,7 +463,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
             # print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
-    def _write_register_byte(self, register : int, value : int):
+    def _write_register_byte(self, register: int, value: int):
         """Low level register writing over I2C, writes one 8-bit value"""
         with self._i2c as i2c:
             i2c.write(bytes([register & 0xFF, value & 0xFF]))
@@ -515,7 +515,9 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
 
     """
 
-    def __init__(self, spi : SPI, cs : Optional[DigitalInOut] = None, baudrate=100000) -> bytearray:
+    def __init__(
+        self, spi: SPI, cs: Optional[DigitalInOut] = None, baudrate=100000
+    ) -> bytearray:
         from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
             spi_device,
         )
@@ -523,7 +525,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
         self._spi = spi_device.SPIDevice(spi, cs, baudrate=baudrate)
         super().__init__()
 
-    def _read_register(self, register : int, length : int):
+    def _read_register(self, register: int, length: int):
         """Low level register reading over SPI, returns a list of values"""
         register = (register | 0x80) & 0xFF  # Read single, bit 7 high.
         with self._spi as spi:
@@ -534,7 +536,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
             # print("$%02X => %s" % (register, [hex(i) for i in result]))
             return result
 
-    def _write_register_byte(self, register : int, value : int):
+    def _write_register_byte(self, register: int, value: int):
         """Low level register writing over SPI, writes one 8-bit value"""
         register &= 0x7F  # Write, bit 7 low.
         with self._spi as spi:
