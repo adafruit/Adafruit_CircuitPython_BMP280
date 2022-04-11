@@ -370,7 +370,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return 44330 * (1.0 - math.pow(p / self.sea_level_pressure, 0.1903))
 
     ####################### Internal helpers ################################
-    def _read_coefficients(self):
+    def _read_coefficients(self) -> None:
         """Read & save the calibration coefficients"""
         coeff = self._read_register(_REGISTER_DIG_T1, 24)
         coeff = list(struct.unpack("<HhhHhhhhhhhh", bytes(coeff)))
@@ -398,11 +398,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
             ret += float(b & 0xFF)
         return ret
 
-    def _read_register(self, register: int, length: int):
+    def _read_register(self, register: int, length: int) -> None:
         """Low level register reading, not implemented in base class"""
         raise NotImplementedError()
 
-    def _write_register_byte(self, register: int, value: int):
+    def _write_register_byte(self, register: int, value: int) -> None:
         """Low level register writing, not implemented in base class"""
         raise NotImplementedError()
 
