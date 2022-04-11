@@ -39,7 +39,7 @@ try:
     from typing import Optional
 
     # Used only for type annotations.
-    from busio import SPI
+    from busio import SPI, I2C
     from digitalio import DigitalInOut
 
 except ImportError:
@@ -448,7 +448,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
 
     """
 
-    def __init__(self, i2c: int, address=0x77):
+    def __init__(self, i2c: I2C, address: int = 0x77) -> None:
         from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
             i2c_device,
         )
