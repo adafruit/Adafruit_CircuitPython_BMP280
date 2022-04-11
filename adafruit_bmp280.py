@@ -306,7 +306,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return ctrl_meas
 
     @property
-    def measurement_time_typical(self):
+    def measurement_time_typical(self) -> float:
         """Typical time in milliseconds required to complete a measurement in normal mode"""
         meas_time_ms = 1
         if self.overscan_temperature != OVERSCAN_DISABLE:
@@ -316,7 +316,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return meas_time_ms
 
     @property
-    def measurement_time_max(self):
+    def measurement_time_max(self) -> float:
         """Maximum time in milliseconds required to complete a measurement in normal mode"""
         meas_time_ms = 1.25
         if self.overscan_temperature != OVERSCAN_DISABLE:
@@ -326,13 +326,13 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return meas_time_ms
 
     @property
-    def temperature(self):
+    def temperature(self) -> float:
         """The compensated temperature in degrees Celsius."""
         self._read_temperature()
         return self._t_fine / 5120.0
 
     @property
-    def pressure(self):
+    def pressure(self) -> Optional[float]:
         """
         The compensated pressure in hectoPascals.
         returns `None` if pressure measurement is disabled
@@ -363,7 +363,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return pressure
 
     @property
-    def altitude(self):
+    def altitude(self) -> float:
         """The altitude based on the sea level pressure (:attr:`sea_level_pressure`)
         - which you must enter ahead of time)"""
         p = self.pressure  # in Si units for hPascal
