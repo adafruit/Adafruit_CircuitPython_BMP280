@@ -136,7 +136,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Check device ID.
         chip_id = self._read_byte(_REGISTER_CHIPID)
         if _CHIP_ID != chip_id:
@@ -155,7 +155,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         """Pressure in hectoPascals at sea level. Used to calibrate `altitude`."""
         self._t_fine = None
 
-    def _read_temperature(self):
+    def _read_temperature(self) -> None:
         # perform one measurement
         if self.mode != MODE_NORMAL:
             self.mode = MODE_FORCE
@@ -179,12 +179,12 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         self._t_fine = int(var1 + var2)
         # print("t_fine: ", self.t_fine)
 
-    def _reset(self):
+    def _reset(self) -> None:
         """Soft reset the sensor"""
         self._write_register_byte(_REGISTER_SOFTRESET, 0xB6)
         sleep(0.004)  # Datasheet says 2ms.  Using 4ms just to be safe
 
-    def _write_ctrl_meas(self):
+    def _write_ctrl_meas(self) -> None:
         """
         Write the values to the ctrl_meas register in the device
         ctrl_meas sets the pressure and temperature data acquisition options
@@ -199,7 +199,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         """Read the value from the config register in the device"""
         return self._read_byte(_REGISTER_CONFIG)
 
-    def _write_config(self):
+    def _write_config(self) -> None:
         """Write the value to the config register in the device"""
         normal_flag = False
         if self._mode == MODE_NORMAL:
@@ -219,7 +219,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._mode
 
     @mode.setter
-    def mode(self, value: int):
+    def mode(self, value: int) -> None:
         if not value in _BMP280_MODES:
             raise ValueError("Mode '%s' not supported" % (value))
         self._mode = value
@@ -234,7 +234,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._t_standby
 
     @standby_period.setter
-    def standby_period(self, value: int):
+    def standby_period(self, value: int) -> None:
         if not value in _BMP280_STANDBY_TCS:
             raise ValueError("Standby Period '%s' not supported" % (value))
         if self._t_standby == value:
@@ -251,7 +251,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_temperature
 
     @overscan_temperature.setter
-    def overscan_temperature(self, value: int):
+    def overscan_temperature(self, value: int) -> None:
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_temperature = value
@@ -266,7 +266,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_pressure
 
     @overscan_pressure.setter
-    def overscan_pressure(self, value: int) -> int:
+    def overscan_pressure(self, value: int) -> None:
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_pressure = value
@@ -281,7 +281,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._iir_filter
 
     @iir_filter.setter
-    def iir_filter(self, value: int):
+    def iir_filter(self, value: int) -> None:
         if not value in _BMP280_IIR_FILTERS:
             raise ValueError("IIR Filter '%s' not supported" % (value))
         self._iir_filter = value
