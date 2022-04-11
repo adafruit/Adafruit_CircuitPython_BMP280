@@ -34,12 +34,14 @@ from time import sleep
 
 from micropython import const
 
-# Used only for type annotations.
-from busio import SPI
-from digitalio import DigitalInOut
 
 try:
     from typing import Optional
+
+    # Used only for type annotations.
+    from busio import SPI
+    from digitalio import DigitalInOut
+
 except ImportError:
     pass
 
