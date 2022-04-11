@@ -517,9 +517,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
 
     """
 
-    def __init__(
-        self, spi: SPI, cs: Optional[DigitalInOut], baudrate=100000
-    ) -> bytearray:
+    def __init__(self, spi: SPI, cs: DigitalInOut, baudrate=100000) -> None:
         from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
             spi_device,
         )
