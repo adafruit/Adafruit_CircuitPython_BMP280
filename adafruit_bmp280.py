@@ -191,11 +191,11 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         """
         self._write_register_byte(_REGISTER_CTRL_MEAS, self._ctrl_meas)
 
-    def _get_status(self):
+    def _get_status(self) -> int:
         """Get the value from the status register in the device"""
         return self._read_byte(_REGISTER_STATUS)
 
-    def _read_config(self):
+    def _read_config(self) -> int:
         """Read the value from the config register in the device"""
         return self._read_byte(_REGISTER_CONFIG)
 
@@ -211,7 +211,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
             self.mode = MODE_NORMAL
 
     @property
-    def mode(self):
+    def mode(self) -> int:
         """
         Operation mode
         Allowed values are set in the MODE enum class
@@ -226,7 +226,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         self._write_ctrl_meas()
 
     @property
-    def standby_period(self):
+    def standby_period(self) -> int:
         """
         Control the inactive period when in Normal mode
         Allowed standby periods are set the STANDBY enum class
@@ -243,7 +243,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         self._write_config()
 
     @property
-    def overscan_temperature(self):
+    def overscan_temperature(self) -> int:
         """
         Temperature Oversampling
         Allowed values are set in the OVERSCAN enum class
@@ -258,7 +258,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         self._write_ctrl_meas()
 
     @property
-    def overscan_pressure(self):
+    def overscan_pressure(self) -> int:
         """
         Pressure Oversampling
         Allowed values are set in the OVERSCAN enum class
@@ -266,14 +266,14 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return self._overscan_pressure
 
     @overscan_pressure.setter
-    def overscan_pressure(self, value: int):
+    def overscan_pressure(self, value: int) -> int:
         if not value in _BMP280_OVERSCANS:
             raise ValueError("Overscan value '%s' not supported" % (value))
         self._overscan_pressure = value
         self._write_ctrl_meas()
 
     @property
-    def iir_filter(self):
+    def iir_filter(self) -> int:
         """
         Controls the time constant of the IIR filter
         Allowed values are set in the IIR_FILTER enum class
@@ -288,7 +288,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         self._write_config()
 
     @property
-    def _config(self):
+    def _config(self) -> int:
         """Value to be written to the device's config register"""
         config = 0
         if self.mode == MODE_NORMAL:
@@ -298,7 +298,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         return config
 
     @property
-    def _ctrl_meas(self):
+    def _ctrl_meas(self) -> int:
         """Value to be written to the device's ctrl_meas register"""
         ctrl_meas = self.overscan_temperature << 5
         ctrl_meas += self.overscan_pressure << 2
