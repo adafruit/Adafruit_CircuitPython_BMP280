@@ -368,6 +368,14 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         - which you must enter ahead of time)"""
         p = self.pressure  # in Si units for hPascal
         return 44330 * (1.0 - math.pow(p / self.sea_level_pressure, 0.1903))
+    
+    @property
+    def p0(self, altitude_m=0.0) -> float:
+        """The calculated sea level pressure based on altitude (:attr:`altitude`)
+        - which you must enter ahead of time)"""
+        p = self.pressure  # in Si units for hPascal
+        p0 = p / math.pow(1.0 - altitude_m/44330.0, 5.255)
+        return p0
 
     ####################### Internal helpers ################################
     def _read_coefficients(self) -> None:
