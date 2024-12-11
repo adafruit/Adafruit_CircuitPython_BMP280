@@ -17,7 +17,7 @@ bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c)
 
 # OR Create sensor object, communicating over the board's default SPI bus
 # spi = busio.SPI()
-# bmp_cs = digitalio.DigitalInOut(board.D10)
+# bmp_cs = digitalio.DigitalInOut(board.D5)
 # bmp280 = adafruit_bmp280.Adafruit_BMP280_SPI(spi, bmp_cs)
 
 # change this to match the location's pressure (hPa) at sea level
