@@ -27,7 +27,10 @@ altitude_output_label = Label(FONT, text="", scale=2)
 
 # place the labels in the middle of the screen with anchored positioning
 tempandpress_output_label.anchor_point = (0, 0)
-tempandpress_output_label.anchored_position = (4, board.DISPLAY.height // 2)
+tempandpress_output_label.anchored_position = (
+    4,
+    board.DISPLAY.height // 2 - 40,
+)
 altitude_output_label.anchor_point = (0, 0)
 altitude_output_label.anchored_position = (4, board.DISPLAY.height // 2 + 20)
 
@@ -43,7 +46,7 @@ board.DISPLAY.root_group = main_group
 while True:
     # Update the label.text property to change the text on the display
     tempandpress_output_label.text = (
-        f"Temperature:{bmp280.temperature:0.1f} C, Pressure:{bmp280.pressure:0.1f} hPa"
+        f"Temperature:{bmp280.temperature:0.1f} C \nPressure:{bmp280.pressure:0.1f} hPa"
     )
     altitude_output_label.text = f"Altitude:{bmp280.altitude:0.2f} mts"
     # wait for a bit
