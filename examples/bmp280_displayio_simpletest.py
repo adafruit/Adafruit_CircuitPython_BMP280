@@ -42,7 +42,9 @@ board.DISPLAY.root_group = main_group
 # begin main loop
 while True:
     # Update the label.text property to change the text on the display
-    tempandpress_output_label.text = f"Temperature:{bmp280.temperature:0.1f} C, Pressure:{bmp280.pressure:0.1f} hPa"
+    tempandpress_output_label.text = (
+        f"Temperature:{bmp280.temperature:0.1f} C, Pressure:{bmp280.pressure:0.1f} hPa"
+    )
     altitude_output_label.text = f"Altitude:{bmp280.altitude:0.2f} mts"
     # wait for a bit
     time.sleep(2.0)
