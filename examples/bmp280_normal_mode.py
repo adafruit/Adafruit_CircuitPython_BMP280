@@ -6,8 +6,11 @@ Example showing how the BMP280 library can be used to set the various
 parameters supported by the sensor.
 Refer to the BMP280 datasheet to understand what these parameters do
 """
+
 import time
+
 import board
+
 import adafruit_bmp280
 
 # Create sensor object, communicating over the board's default I2C bus

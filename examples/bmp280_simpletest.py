@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 """Simpletest Example that shows how to get temperature,
-   pressure, and altitude readings from a BMP280"""
+pressure, and altitude readings from a BMP280"""
+
 import time
+
 import board
 
 # import digitalio # For use with SPI

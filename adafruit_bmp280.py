@@ -28,18 +28,18 @@ Implementation Notes
   https://github.com/adafruit/circuitpython/releases
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
+
 import math
 import struct
 from time import sleep
 
 from micropython import const
 
-
 try:
     from typing import Optional
 
     # Used only for type annotations.
-    from busio import SPI, I2C
+    from busio import I2C, SPI
     from digitalio import DigitalInOut
 
 except ImportError:
@@ -125,7 +125,7 @@ _BMP280_STANDBY_TCS = (
 )
 
 
-class Adafruit_BMP280:  # pylint: disable=invalid-name
+class Adafruit_BMP280:
     """Base BMP280 object. Use :class:`Adafruit_BMP280_I2C` or :class:`Adafruit_BMP280_SPI`
     instead of this. This checks the BMP280 was found, reads the coefficients and
     enables the sensor for continuous reads
@@ -162,13 +162,9 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
             # Wait for conversion to complete
             while self._get_status() & 0x08:
                 sleep(0.002)
-        raw_temperature = (
-            self._read24(_REGISTER_TEMPDATA) / 16
-        )  # lowest 4 bits get dropped
+        raw_temperature = self._read24(_REGISTER_TEMPDATA) / 16  # lowest 4 bits get dropped
         # print("raw temp: ", UT)
-        var1 = (
-            raw_temperature / 16384.0 - self._temp_calib[0] / 1024.0
-        ) * self._temp_calib[1]
+        var1 = (raw_temperature / 16384.0 - self._temp_calib[0] / 1024.0) * self._temp_calib[1]
         # print(var1)
         var2 = (
             (raw_temperature / 131072.0 - self._temp_calib[0] / 8192.0)
@@ -412,7 +408,7 @@ class Adafruit_BMP280:  # pylint: disable=invalid-name
         raise NotImplementedError()
 
 
-class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
+class Adafruit_BMP280_I2C(Adafruit_BMP280):
     """Driver for I2C connected BMP280.
 
     :param ~busio.I2C i2c: The I2C bus the BMP280 is connected to.
@@ -454,7 +450,7 @@ class Adafruit_BMP280_I2C(Adafruit_BMP280):  # pylint: disable=invalid-name
     """
 
     def __init__(self, i2c: I2C, address: int = 0x77) -> None:
-        from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
+        from adafruit_bus_device import (  # noqa: PLC0415
             i2c_device,
         )
 
@@ -523,7 +519,7 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
     """
 
     def __init__(self, spi: SPI, cs: DigitalInOut, baudrate=100000) -> None:
-        from adafruit_bus_device import (  # pylint: disable=import-outside-toplevel
+        from adafruit_bus_device import (  # noqa: PLC0415
             spi_device,
         )
 
@@ -534,7 +530,6 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
         """Low level register reading over SPI, returns a list of values"""
         register = (register | 0x80) & 0xFF  # Read single, bit 7 high.
         with self._spi as spi:
-            # pylint: disable=no-member
             spi.write(bytearray([register]))
             result = bytearray(length)
             spi.readinto(result)
@@ -545,5 +540,4 @@ class Adafruit_BMP280_SPI(Adafruit_BMP280):
         """Low level register writing over SPI, writes one 8-bit value"""
         register &= 0x7F  # Write, bit 7 low.
         with self._spi as spi:
-            # pylint: disable=no-member
             spi.write(bytes([register, value & 0xFF]))
