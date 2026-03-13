@@ -105,8 +105,6 @@ standby timeconstant values
 TC_X[_Y] where X=milliseconds and Y=tenths of a millisecond
 """
 STANDBY_TC_0_5 = const(0x00)  # 0.5ms
-STANDBY_TC_10 = const(0x06)  # 10ms
-STANDBY_TC_20 = const(0x07)  # 20ms
 STANDBY_TC_62_5 = const(0x01)  # 62.5ms
 STANDBY_TC_125 = const(0x02)  # 125ms
 STANDBY_TC_250 = const(0x03)  # 250ms
@@ -118,8 +116,6 @@ STANDBY_TC_4000 = const(0x07)  # 4000ms
 
 _BMP280_STANDBY_TCS = (
     STANDBY_TC_0_5,
-    STANDBY_TC_10,
-    STANDBY_TC_20,
     STANDBY_TC_62_5,
     STANDBY_TC_125,
     STANDBY_TC_250,
