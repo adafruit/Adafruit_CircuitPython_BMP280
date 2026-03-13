@@ -113,7 +113,6 @@ STANDBY_TC_1000 = const(0x05)  # 1000ms
 STANDBY_TC_2000 = const(0x06)  # 2000ms
 STANDBY_TC_4000 = const(0x07)  # 4000ms
 
-
 _BMP280_STANDBY_TCS = (
     STANDBY_TC_0_5,
     STANDBY_TC_62_5,
