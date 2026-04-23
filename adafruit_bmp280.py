@@ -140,7 +140,7 @@ class Adafruit_BMP280:
         # Check device ID.
         chip_id = self._read_byte(_REGISTER_CHIPID)
         if _CHIP_ID != chip_id:
-            raise RuntimeError("Failed to find BMP280! Chip ID 0x%x" % chip_id)
+            raise RuntimeError(f"Failed to find BMP280! Chip ID 0x{chip_id:x}")
         # Set some reasonable defaults.
         self._iir_filter = IIR_FILTER_DISABLE
         self._overscan_temperature = OVERSCAN_X2
@@ -217,7 +217,7 @@ class Adafruit_BMP280:
     @mode.setter
     def mode(self, value: int) -> None:
         if not value in _BMP280_MODES:
-            raise ValueError("Mode '%s' not supported" % (value))
+            raise ValueError(f"Mode '{value}' not supported")
         self._mode = value
         self._write_ctrl_meas()
 
@@ -232,7 +232,7 @@ class Adafruit_BMP280:
     @standby_period.setter
     def standby_period(self, value: int) -> None:
         if not value in _BMP280_STANDBY_TCS:
-            raise ValueError("Standby Period '%s' not supported" % (value))
+            raise ValueError(f"Standby Period '{value}' not supported")
         if self._t_standby == value:
             return
         self._t_standby = value
@@ -249,7 +249,7 @@ class Adafruit_BMP280:
     @overscan_temperature.setter
     def overscan_temperature(self, value: int) -> None:
         if not value in _BMP280_OVERSCANS:
-            raise ValueError("Overscan value '%s' not supported" % (value))
+            raise ValueError(f"Overscan value '{value}' not supported")
         self._overscan_temperature = value
         self._write_ctrl_meas()
 
@@ -264,7 +264,7 @@ class Adafruit_BMP280:
     @overscan_pressure.setter
     def overscan_pressure(self, value: int) -> None:
         if not value in _BMP280_OVERSCANS:
-            raise ValueError("Overscan value '%s' not supported" % (value))
+            raise ValueError(f"Overscan value '{value}' not supported")
         self._overscan_pressure = value
         self._write_ctrl_meas()
 
@@ -279,7 +279,7 @@ class Adafruit_BMP280:
     @iir_filter.setter
     def iir_filter(self, value: int) -> None:
         if not value in _BMP280_IIR_FILTERS:
-            raise ValueError("IIR Filter '%s' not supported" % (value))
+            raise ValueError(f"IIR Filter '{value}' not supported")
         self._iir_filter = value
         self._write_config()
 
@@ -340,7 +340,7 @@ class Adafruit_BMP280:
         adc = self._read24(_REGISTER_PRESSUREDATA) / 16  # lowest 4 bits get dropped
         var1 = float(self._t_fine) / 2.0 - 64000.0
         var2 = var1 * var1 * self._pressure_calib[5] / 32768.0
-        var2 = var2 + var1 * self._pressure_calib[4] * 2.0
+        var2 += var1 * self._pressure_calib[4] * 2.0
         var2 = var2 / 4.0 + self._pressure_calib[3] * 65536.0
         var3 = self._pressure_calib[2] * var1 * var1 / 524288.0
         var1 = (var3 + self._pressure_calib[1] * var1) / 524288.0
@@ -353,7 +353,7 @@ class Adafruit_BMP280:
         pressure = ((pressure - var2 / 4096.0) * 6250.0) / var1
         var1 = self._pressure_calib[8] * pressure * pressure / 2147483648.0
         var2 = pressure * self._pressure_calib[7] / 32768.0
-        pressure = pressure + (var1 + var2 + self._pressure_calib[6]) / 16.0
+        pressure += (var1 + var2 + self._pressure_calib[6]) / 16.0
         pressure /= 100
 
         return pressure

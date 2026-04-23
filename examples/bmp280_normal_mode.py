@@ -34,7 +34,7 @@ bmp280.overscan_temperature = adafruit_bmp280.OVERSCAN_X2
 time.sleep(1)
 
 while True:
-    print("\nTemperature: %0.1f C" % bmp280.temperature)
-    print("Pressure: %0.1f hPa" % bmp280.pressure)
-    print("Altitude = %0.2f meters" % bmp280.altitude)
+    print(f"\nTemperature: {bmp280.temperature:0.1f} C")
+    print(f"Pressure: {bmp280.pressure:0.1f} hPa")
+    print(f"Altitude = {bmp280.altitude:0.2f} meters")
     time.sleep(2)
